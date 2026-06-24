@@ -1,0 +1,5 @@
+# Dependency folders (very heavy, never upload)
+node_modules/
+
+# Environment variables 
+.env
