@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
+import NoteCard from '../components/NoteCard' 
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const RateLimitedUI = () => {
   return (
@@ -12,7 +15,7 @@ const RateLimitedUI = () => {
     </div>
   );
 };
-
+ 
 const HomePage = () => {
   const [isRateLimited, setIsRateLimited] = useState(false);
   const [notes, setNotes] = useState([])
@@ -22,23 +25,22 @@ const HomePage = () => {
     const fetchNotes = async () => {
       try {
         setLoading(true);
-        const res = await axios.post("http://localhost:5001/api/notes");
+        setIsRateLimited(false); 
+        const res = await axios.get("http://localhost:5001/api/notes");
         
-        if (res.status === 429) { 
-          setIsRateLimited(true);
-          setLoading(false);
-          return;
-        }
-        
-        const data = await res.json();
-        console.log(data);
-        
-        
+        setNotes(res.data);
+        console.log(res.data);
         
       } catch (error) {
-        console.log("Error fetching notes", error);
+        console.log("Error fetching notes");
+        
+        if (error.response && error.response.status === 429) { 
+          setIsRateLimited(true);
+        } else {
+          toast.error("Failed to load notes");
+          console.log(error);
+        }
       } finally {
-         
         setLoading(false);
       }
     };
@@ -61,13 +63,10 @@ const HomePage = () => {
            
             {notes.length === 0 && !isRateLimited && <p>No notes found. Create one!</p>}
 
-            {}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-              {notes.map((note) => (
-                <div key={note._id} className="card bg-base-200 shadow-xl p-4 border border-base-content/10">
-                  <h3 className="font-bold text-lg text-secondary">{note.title}</h3>
-                  <p className="text-sm mt-2">{note.content}</p>
-                </div>
+            {/* ✨ Fixed Grid and Single Loop */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+              {notes.map((singleNote) => (
+                <NoteCard key={singleNote._id} note={singleNote} />
               ))}
             </div>
 
