@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
-import NoteCard from '../components/NoteCard' 
+import NoteCard from '../components/NoteCard' ;
+import NotesNotFound from '../components/NotesNotFound';
+import api from '../lib/axios';
 import axios from "axios";
 import toast from "react-hot-toast";
 
@@ -26,7 +28,7 @@ const HomePage = () => {
       try {
         setLoading(true);
         setIsRateLimited(false); 
-        const res = await axios.get("http://localhost:5001/api/notes");
+        const res = await api.get("/notes");
         
         setNotes(res.data);
         console.log(res.data);
@@ -58,15 +60,15 @@ const HomePage = () => {
         {loading ? (
           <span className="loading loading-spinner loading-lg text-primary block mx-auto mt-10"></span>
         ) : (
-          <div className="mt-4">
+          <div className="mt-4 w-full" >
             <h2 className="text-xl font-bold mb-2">Your Dashboard</h2>
-           
-            {notes.length === 0 && !isRateLimited && <p>No notes found. Create one!</p>}
+           {notes.length===0&&!isRateLimited&&<NotesNotFound/>}
+            {notes.length === 0 && !isRateLimited }
 
-            {/* ✨ Fixed Grid and Single Loop */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+            {}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4 w-full items-start">
               {notes.map((singleNote) => (
-                <NoteCard key={singleNote._id} note={singleNote} />
+                <NoteCard key={singleNote._id} note={singleNote} setNotes={setNotes}/>
               ))}
             </div>
 

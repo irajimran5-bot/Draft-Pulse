@@ -1,7 +1,8 @@
 import Note from "../models/Note.js"
+import mongoose from "mongoose";
 export async function getAllNotes(req,res){
    try{
-    const notes=await Note.find()
+    const notes=await Note.find().sort({createdAt:-1});
     res.status(200).json(notes)
    }catch(error){
     console.error("Error in getAllNotes controller",error);
@@ -21,6 +22,11 @@ export async function getNotebyId(_,res){
     }
 }
 export async function createNotes(req,res){
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "Invalid note ID format" });
+    }
     try{
         const{title,content}=req.body
         const newNote=new Note({title,content})
@@ -48,7 +54,7 @@ export async function updateNote(req,res){
 export async function deleteNote(req,res){
     try{
         const deletedNote=await Note.findByIdAndDelete(req.params.id)
-        if(!deleteNote)
+        if(!deletedNote)
             return res.status(404).json({message:"Note not found"});
     res.status(200).json({message:"Note deleted successfully!"})
     }catch(error){

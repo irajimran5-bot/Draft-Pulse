@@ -22,7 +22,7 @@ app.use(
     credentials: true
 })
 );
-
+app.options('*', cors());
 app.use("/api/notes",notesRoute);
 connectDB().then(()=>{
         app.listen(5001,()=>{
