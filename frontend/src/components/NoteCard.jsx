@@ -23,7 +23,7 @@ const NoteCard = ({ note,setNotes }) => {
     if(!window.confirm("Are you sure you want to delete this note?"))
       return;
       try{
-        await api.delete(`/notes/${id}`)
+        await api.delete(`/api/notes/${id}`)
         setNotes((prev)=>prev.filter(note=>note._id !==id))
         toast.success("Note deleted successfully!");
       }catch(error){

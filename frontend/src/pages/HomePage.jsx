@@ -23,12 +23,14 @@ const HomePage = () => {
   const [notes, setNotes] = useState([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
+ useEffect(() => {
     const fetchNotes = async () => {
       try {
         setLoading(true);
         setIsRateLimited(false); 
-        const res = await api.get("/notes");
+        
+        // FIX: Added the correct /api prefix here
+        const res = await api.get("/api/notes");
         
         setNotes(res.data);
         console.log(res.data);
