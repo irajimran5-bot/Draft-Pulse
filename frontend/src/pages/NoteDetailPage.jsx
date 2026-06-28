@@ -13,7 +13,7 @@ const NoteDetailPage = () => {
   useEffect(()=>{
     const fetchNote=async()=>{
       try{
-        const res=await api.get(`/notes/${id}`)
+        const res=await api.get(`/api/notes/${id}`)
         console.log("Backend response data:", res.data);//check
         
         if (res.data && Array.isArray(res.data)) {
