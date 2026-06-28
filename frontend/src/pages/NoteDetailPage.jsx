@@ -4,7 +4,7 @@ import { ArrowLeftIcon, LoaderIcon, Trash2Icon } from 'lucide-react';
 import api from '../lib/axios';
 import toast from 'react-hot-toast';
 const NoteDetailPage = () => {
-  const [note,setNote]=useState(null);
+  const [note,setNote]=useState({title:"",content:""});
   const [loading,setLoading]=useState(true);
   const[saving,setSaving]=useState(false);
 
@@ -14,7 +14,13 @@ const NoteDetailPage = () => {
     const fetchNote=async()=>{
       try{
         const res=await api.get(`/notes/${id}`)
-        setNote(res.data)
+        console.log("Backend response data:", res.data);//check
+        
+        if (res.data && Array.isArray(res.data)) {
+        setNote(res.data[0]); 
+      } else if (res.data) {
+        setNote(res.data);   
+      }
       }
       catch(error){
         console.log("Error in fetching notes",error)
@@ -103,7 +109,7 @@ const NoteDetailPage = () => {
                   type="text"
                   placeholder="Note title"
                   className="input input-bordered"
-                  value={note.title}
+                  value={note?.title||""}
                   onChange={(e) => setNote({ ...note, title: e.target.value })}
                 />
               </div>
@@ -115,7 +121,7 @@ const NoteDetailPage = () => {
                 <textarea
                   placeholder="Write your note here..."
                   className="textarea textarea-bordered h-32"
-                  value={note.content}
+                  value={note?.content||""}
                   onChange={(e) => setNote({ ...note, content: e.target.value })}
                 />
               </div>

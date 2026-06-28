@@ -5,15 +5,19 @@ import notesRoute from "./routes/notesRoute.js"
 import { connectDB } from "./config/db.js";
 import rateLimiter from "./middleware/rateLimiter.js";
 import dotenv from "dotenv";
+import path from "path";
 const app=express();
 
-
+const _dirname=path.resolve()
 //middleware-a function that lies between the request and response
+
 app.use(express.json());
-app.use((req,res,next)=>{
-    console.log(`Req method is ${req.method} & Req URL is ${req.url}`);
-    next();
-});
+if(process.env.NODE_ENV!=="production"){
+    app.use((req,res,next)=>{
+        console.log(`Req method is ${req.method} & Req URL is ${req.url}`);
+        next();
+    });
+}
 app.use(rateLimiter);
 app.use(
     cors({
@@ -24,6 +28,13 @@ app.use(
 );
 app.options('*', cors());
 app.use("/api/notes",notesRoute);
+if(process.env.NODE_ENV==="production"){
+    app.use(express.static(path.join(_dirname,"../frontend/dist")))
+    app.get("*",(req,res)=>{
+        res.sendFile(path.join(_dirname,"../frontend","dist","index.html"))
+    });
+}
+
 connectDB().then(()=>{
         app.listen(5001,()=>{
             console.log("Server started on port: 5001");
