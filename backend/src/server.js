@@ -10,7 +10,7 @@ const app=express();
 
 const _dirname=path.resolve()
 //middleware-a function that lies between the request and response
-
+connectDB();
 app.use(express.json());
 if(process.env.NODE_ENV!=="production"){
     app.use((req,res,next)=>{
@@ -19,6 +19,10 @@ if(process.env.NODE_ENV!=="production"){
     });
 }
 app.use(rateLimiter);
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://thinkboard-topaz.vercel.app"
+];
 app.use(
     cors({
     origin:"http://localhost:5173",
@@ -34,9 +38,11 @@ if(process.env.NODE_ENV==="production"){
         res.sendFile(path.join(_dirname,"../frontend","dist","index.html"))
     });
 }
+export default app;
 
-connectDB().then(()=>{
+
+if (process.env.NODE_ENV !== "production"){
         app.listen(5001,()=>{
             console.log("Server started on port: 5001");
     });
-});
+};
